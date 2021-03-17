@@ -9,3 +9,6 @@ nodejs_url: "https://nodejs.org/dist/v{{ nodejs_version }}/{{ nodejs_archive }}"
 nodejs_link_name: nodejs
 
 nodejs_in_profile: no
+nodejs_use_official: no
+nodejs_official_supported:
+  - Linux

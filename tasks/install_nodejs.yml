@@ -47,4 +47,5 @@
       when: t_nodejs_install
 
   when:
-    - ansible_system == 'Linux'
+    - nodejs_use_official
+    - ansible_system in nodejs_official_supported
