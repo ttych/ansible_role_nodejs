@@ -1,0 +1,37 @@
+---
+
+- block:
+    - name: check shell profile files
+      stat:
+        path: "{{ whoami_homedir.stdout }}/{{ item }}"
+      register: nodejs_profile_stat
+      loop:
+        - .profile
+        - .bash_profile
+        - .zprofile
+        - .bashrc
+        - .zshrc
+
+    - name: find shell profile
+      set_fact:
+        nodejs_shell_profile: "{{ (nodejs_profile_stat.results | selectattr('stat.exists') | first)['stat']['path'] }}"
+      ignore_errors: yes
+
+    - name: use default shell profile
+      set_fact:
+        nodejs_shell_profile: "{{ whoami_homedir.stdout }}/.profile"
+      when: nodejs_shell_profile is not defined or nodejs_shell_profile == ''
+
+    - name: set nodejs profile
+      lineinfile:
+        path: "{{ nodejs_shell_profile }}"
+        owner: "{{ whoami.stdout }}"
+        mode: '0600'
+        create: yes
+        regexp: "{{ item.regexp }}"
+        line: "{{ item.line }}"
+      loop:
+        - regexp: '^export PATH="{{ nodejs_base_dir }}/{{ nodejs_link_name }}/bin:\$PATH"'
+          line: 'export PATH="{{ nodejs_base_dir }}/{{ nodejs_link_name }}/bin:$PATH"'
+
+  when: nodejs_in_profile

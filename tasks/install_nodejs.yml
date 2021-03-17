@@ -1,0 +1,50 @@
+---
+
+- name: use official release
+  block:
+    - name: "set {{ nodejs_base_dir }} directory"
+      file:
+        path: "{{ nodejs_base_dir }}"
+        mode: "0755"
+        state: directory
+
+    - name: stat nodejs distribution
+      stat:
+        path: "{{ nodejs_base_dir }}/{{ nodejs_link_name }}/bin/node"
+      register: t_nodejs_bin
+
+    - name: "set install nodejs to {{ not t_nodejs_bin.stat.exists }}"
+      set_fact:
+        t_nodejs_install: "{{ not t_nodejs_bin.stat.exists }}"
+
+    - name: "install nodejs {{ nodejs_version }}"
+      block:
+        - name: "download nodejs {{ nodejs_version }}"
+          get_url:
+            url: "{{ nodejs_url }}"
+            dest: "{{ nodejs_base_dir }}/{{ nodejs_archive }}"
+            mode: "0644"
+
+        - name: "extract archive"
+          unarchive:
+            remote_src: yes
+            src: "{{ nodejs_base_dir }}/{{ nodejs_archive }}"
+            dest: "{{ nodejs_base_dir }}"
+            mode: "go-w"
+
+        - name: "link this release"
+          file:
+            src: "{{ nodejs_base_dir }}/{{ nodejs_release }}"
+            dest: "{{ nodejs_base_dir }}/{{ nodejs_link_name }}"
+            force: yes
+            state: link
+
+        - name: clean tempfiles
+          file:
+            path: "{{ nodejs_base_dir }}/{{ nodejs_archive }}"
+            state: absent
+
+      when: t_nodejs_install
+
+  when:
+    - ansible_system == 'Linux'

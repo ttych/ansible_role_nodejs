@@ -1,0 +1,11 @@
+---
+
+nodejs_local_dir: local
+
+nodejs_version: 15.11.0
+nodejs_release: "node-v{{ nodejs_version }}-{{ ansible_system | lower }}-{{ ansible_architecture | replace('86_', '') }}"
+nodejs_archive: "{{ nodejs_release }}.tar.xz"
+nodejs_url: "https://nodejs.org/dist/v{{ nodejs_version }}/{{ nodejs_archive }}"
+nodejs_link_name: nodejs
+
+nodejs_in_profile: no
