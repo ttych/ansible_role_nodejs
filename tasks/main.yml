@@ -18,8 +18,11 @@
 
   when: nodejs_base_dir is not defined or nodejs_base_dir == ""
 
-- name: install_nodejs
-  include_tasks: install_nodejs.yml
+- name: install nodejs
+  include: install_nodejs.yml
 
-- name: update_profile
-  include_tasks: update_profile.yml
+- name: install yarn
+  include: install_yarn.yml
+
+- name: update profile
+  include: update_profile.yml

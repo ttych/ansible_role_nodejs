@@ -1,0 +1,19 @@
+---
+
+- name: have yarn
+  block:
+    - name: check if yarn installed globally
+      command: "npm list -g --depth=0 yarn"
+      environment:
+        PATH: "{{ nodejs_base_dir }}/{{ nodejs_link_name }}/bin:{{ lookup('env', 'PATH') }}"
+      failed_when: no
+      changed_when: no
+      register: t_nodejs_yarn_installed
+
+    - name: install yarn globally
+      command: "npm install -g yarn"
+      environment:
+        PATH: "{{ nodejs_base_dir }}/{{ nodejs_link_name }}/bin:{{ lookup('env', 'PATH') }}"
+      when: t_nodejs_yarn_installed.rc != 0
+
+  when: nodejs_with_yarn
